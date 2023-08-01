@@ -7,34 +7,28 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /*
 Service 클래스에서 command + shift + T : 해당 클래스의 Test 파일 생성
 */
 
-//아래의 테스트는 '단위 테스트'이다.
-//스프링 컨테이너에 올리지 않고 테스트하는 것을 '단위 테스트'라고 할 수 있다.
-//순수한 '단위 테스트'가 '통합 테스트'에 비교해서 훨씬 좋은 테스트일 확률이 높다.
+//아래의 테스트는 '스프링 통합 테스트'이다.
+//통합 테스트는 스프링 컨테이너 혹은 DB를 연동해서 하는 테스트이다.
 
-class MemberServiceTest {
 
+@SpringBootTest
+@Transactional  //테스트 하고 커밋을 하는 것이 아닌 롤백을 한다. 다음 테스트에 영향을 주지 않기 위함.
+class MemberServiceIntegrationTest {
+
+    @Autowired          //원래는 생성자 주입을 했겠지만, 테스트 코드는 제일 편하게 autowired 사용.
     MemberService memberService;
-    MemoryMemberRepository memberRepository;
-
-
-    @BeforeEach
-    public void beforeEach(){
-        memberRepository = new MemoryMemberRepository();
-        memberService = new MemberService(memberRepository);
-
-    }
-
-    @AfterEach
-    public void afterEach(){
-        memberRepository.clearStore();
-    }
+    @Autowired
+    MemberRepository memberRepository;
 
     @Test
     void 회원가입() {         //test 코드 같은 경우, 한글로 메소드 이름 지정해도 괜찮다.
